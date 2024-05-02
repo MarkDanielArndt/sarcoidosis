@@ -1,0 +1,39 @@
+{
+    "os": "Windows-10-10.0.22631-SP0",
+    "python": "3.11.9",
+    "heartbeatAt": "2024-05-02T12:23:36.839513",
+    "startedAt": "2024-05-02T12:23:35.781916",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "c:\\Users\\Mark\\OneDrive\\Dokumente\\PhD\\sacoidosis\\config.py",
+    "codePathLocal": "config.py",
+    "codePath": "config.py",
+    "host": "Mark_PC",
+    "username": "Mark",
+    "executable": "C:\\Users\\Mark\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\python.exe",
+    "cpu_count": 14,
+    "cpu_count_logical": 20,
+    "cpu_freq": {
+        "current": 2400.0,
+        "min": 0.0,
+        "max": 2400.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2400.0,
+            "min": 0.0,
+            "max": 2400.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 951.6455039978027,
+            "used": 263.1918067932129
+        }
+    },
+    "memory": {
+        "total": 31.52911376953125
+    }
+}

@@ -1,0 +1,37 @@
+2024-05-02 14:30:03,992 INFO    StreamThr :34164 [internal.py:wandb_internal():86] W&B internal server running at pid: 34164, started at: 2024-05-02 14:30:03.991228
+2024-05-02 14:30:03,993 DEBUG   HandlerThread:34164 [handler.py:handle_request():146] handle_request: status
+2024-05-02 14:30:03,995 INFO    WriterThread:34164 [datastore.py:open_for_write():87] open: C:\Users\Mark\OneDrive\Dokumente\PhD\sacoidosis\wandb\run-20240502_143003-krxa5w9g\run-krxa5w9g.wandb
+2024-05-02 14:30:03,995 DEBUG   SenderThread:34164 [sender.py:send():379] send: header
+2024-05-02 14:30:03,996 DEBUG   SenderThread:34164 [sender.py:send():379] send: run
+2024-05-02 14:30:04,671 INFO    SenderThread:34164 [dir_watcher.py:__init__():211] watching files in: C:\Users\Mark\OneDrive\Dokumente\PhD\sacoidosis\wandb\run-20240502_143003-krxa5w9g\files
+2024-05-02 14:30:04,671 INFO    SenderThread:34164 [sender.py:_start_run_threads():1124] run started: krxa5w9g with start time 1714653003.992234
+2024-05-02 14:30:04,671 DEBUG   HandlerThread:34164 [handler.py:handle_request():146] handle_request: check_version
+2024-05-02 14:30:04,671 DEBUG   SenderThread:34164 [sender.py:send_request():406] send_request: check_version
+2024-05-02 14:30:05,142 DEBUG   HandlerThread:34164 [handler.py:handle_request():146] handle_request: run_start
+2024-05-02 14:30:05,156 DEBUG   HandlerThread:34164 [system_info.py:__init__():26] System info init
+2024-05-02 14:30:05,156 DEBUG   HandlerThread:34164 [system_info.py:__init__():41] System info init done
+2024-05-02 14:30:05,156 INFO    HandlerThread:34164 [system_monitor.py:start():194] Starting system monitor
+2024-05-02 14:30:05,156 INFO    SystemMonitor:34164 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-05-02 14:30:05,156 INFO    HandlerThread:34164 [system_monitor.py:probe():214] Collecting system info
+2024-05-02 14:30:05,156 INFO    SystemMonitor:34164 [interfaces.py:start():190] Started cpu monitoring
+2024-05-02 14:30:05,156 DEBUG   HandlerThread:34164 [system_info.py:probe():150] Probing system
+2024-05-02 14:30:05,156 INFO    SystemMonitor:34164 [interfaces.py:start():190] Started disk monitoring
+2024-05-02 14:30:05,172 INFO    SystemMonitor:34164 [interfaces.py:start():190] Started memory monitoring
+2024-05-02 14:30:05,172 INFO    SystemMonitor:34164 [interfaces.py:start():190] Started network monitoring
+2024-05-02 14:30:05,185 DEBUG   HandlerThread:34164 [gitlib.py:_init_repo():56] git repository is invalid
+2024-05-02 14:30:05,185 DEBUG   HandlerThread:34164 [system_info.py:probe():198] Probing system done
+2024-05-02 14:30:05,185 DEBUG   HandlerThread:34164 [system_monitor.py:probe():223] {'os': 'Windows-10-10.0.22631-SP0', 'python': '3.11.9', 'heartbeatAt': '2024-05-02T12:30:05.156546', 'startedAt': '2024-05-02T12:30:03.975416', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': 'c:\\Users\\Mark\\OneDrive\\Dokumente\\PhD\\sacoidosis\\main.py', 'codePathLocal': 'main.py', 'codePath': 'main.py', 'host': 'Mark_PC', 'username': 'Mark', 'executable': 'C:\\Users\\Mark\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\python.exe', 'cpu_count': 14, 'cpu_count_logical': 20, 'cpu_freq': {'current': 2400.0, 'min': 0.0, 'max': 2400.0}, 'cpu_freq_per_core': [{'current': 2400.0, 'min': 0.0, 'max': 2400.0}], 'disk': {'/': {'total': 951.6455039978027, 'used': 263.18688583374023}}, 'memory': {'total': 31.52911376953125}}
+2024-05-02 14:30:05,185 INFO    HandlerThread:34164 [system_monitor.py:probe():224] Finished collecting system info
+2024-05-02 14:30:05,185 INFO    HandlerThread:34164 [system_monitor.py:probe():227] Publishing system info
+2024-05-02 14:30:05,185 INFO    HandlerThread:34164 [system_monitor.py:probe():229] Finished publishing system info
+2024-05-02 14:30:05,188 DEBUG   SenderThread:34164 [sender.py:send():379] send: files
+2024-05-02 14:30:05,188 INFO    SenderThread:34164 [sender.py:_save_file():1390] saving file wandb-metadata.json with policy now
+2024-05-02 14:30:05,268 DEBUG   HandlerThread:34164 [handler.py:handle_request():146] handle_request: python_packages
+2024-05-02 14:30:05,269 DEBUG   SenderThread:34164 [sender.py:send_request():406] send_request: python_packages
+2024-05-02 14:30:05,269 DEBUG   HandlerThread:34164 [handler.py:handle_request():146] handle_request: stop_status
+2024-05-02 14:30:05,270 DEBUG   SenderThread:34164 [sender.py:send_request():406] send_request: stop_status
+2024-05-02 14:30:05,270 DEBUG   HandlerThread:34164 [handler.py:handle_request():146] handle_request: internal_messages
+2024-05-02 14:30:05,684 INFO    Thread-16 :34164 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mark\OneDrive\Dokumente\PhD\sacoidosis\wandb\run-20240502_143003-krxa5w9g\files\wandb-metadata.json
+2024-05-02 14:30:05,684 INFO    Thread-16 :34164 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mark\OneDrive\Dokumente\PhD\sacoidosis\wandb\run-20240502_143003-krxa5w9g\files\requirements.txt
+2024-05-02 14:30:05,794 DEBUG   SenderThread:34164 [sender.py:send():379] send: telemetry
+2024-05-02 14:30:06,125 INFO    wandb-upload_0:34164 [upload_job.py:push():131] Uploaded file C:\Users\Mark\AppData\Local\Temp\tmpkpk53n9iwandb\f0v37wbc-wandb-metadata.json

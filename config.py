@@ -20,7 +20,7 @@ num_splits = int(args.num_splits)
 # Data paths
 if cluster:
     folder_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t" / "sarcoidosis" / 'sarcoidosis_MIPs_(npy)'
-    csv_file_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t" / "sarcoidosis" / "sacoidosis.csv"
+    csv_file_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t" / "sarcoidosis" / "sacoidosis.CSV"
     checkpoint_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t" / "sarcoidosis" / "checkpoints" 
     image_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t"  / "sarcoidosis" / "plots"
     

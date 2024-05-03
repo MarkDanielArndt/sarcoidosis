@@ -1,4 +1,12 @@
 
+import tensorflow as tf
+import numpy as np
+import cv2
+
+def softmax(x):
+    exp_x = np.exp(x) 
+    return exp_x / exp_x.sum(axis=0)
+
 def calculate_grad_cam(model, layer_name, image):
     # Create a graph that outputs target convolution and output
     grad_model = tf.keras.models.Model([model.inputs], [model.get_layer(layer_name).output, model.output])

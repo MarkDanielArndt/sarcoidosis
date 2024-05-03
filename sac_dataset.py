@@ -8,6 +8,8 @@ import cv2
 import torchvision.transforms as transforms
 import config
 import random
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
 csv_file_path = config.csv_file_path
@@ -27,38 +29,26 @@ crop_x_start, crop_x_end = config.crop_x_start, config.crop_x_end
 crop_y_start, crop_y_end = config.crop_y_start, config.crop_y_end 
 
 def saturate_image(image):
-        hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-        hsv_image[..., 1] *= np.random.uniform(0.5, 1.5)
-        return cv2.cvtColor(hsv_image, cv2.COLOR_HSV2RGB)
+    hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    hsv_image[..., 1] *= np.random.uniform(0.5, 1.5)  
+    return cv2.cvtColor(hsv_image, cv2.COLOR_HSV2RGB)
 
 def adjust_contrast(image, factor):
-    # You can implement this function using PyTorch transformations if needed
-    pass
+    return tf.image.adjust_contrast(image, factor)
 
 def custom_contrast(image):
-    factor = torch.tensor(np.random.uniform(0.4, 1), dtype=torch.float32)
+    factor = tf.random.uniform([], 0.4, 1)  
     return adjust_contrast(image, factor)
 
-train_transform = transforms.Compose([
-    transforms.ToPILImage(),
-    transforms.RandomHorizontalFlip(),
-    #transforms.Lambda(custom_contrast),
-    transforms.ToTensor(),
-])
-
-class CustomImageDataset(Dataset):
-    def __init__(self, features_array, labels_array, transform=None):
-
-
-        self.labels_array = labels_array
-        self.features_array = torch.tensor(features_array, dtype=torch.float32).permute(0, 3, 1, 2) / 255
-    
-    def __len__(self):
-        return len(self.labels_array)
-
-    def __getitem__(self, idx):
-        return self.features_array[idx], self.labels_array[idx]
-    
+train_datagen = ImageDataGenerator(
+    horizontal_flip=True,
+    fill_mode='nearest',
+    preprocessing_function=custom_contrast
+    #vertical_flip=True,
+    #brightness_range=[0.2, 0.5]
+        
+        
+    )
 
 # Scan folder and load each numpy file
 for filename in os.listdir(folder_path):

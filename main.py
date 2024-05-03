@@ -1,141 +1,141 @@
+import os
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.optimizers import Adamax
+import numpy as np
 import pandas as pd
-import os 
-import numpy as np
-import cv2
-import matplotlib.pyplot as plt
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torchvision.models as models
-import torchvision.transforms as transforms
-from torch.utils.data import DataLoader, Dataset
-from sklearn.metrics import f1_score, confusion_matrix
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-import cv2
-import config
-import sac_dataset
-from tqdm import tqdm
-from sac_dataset import features_array, labels_array
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from tensorflow.keras.layers import Dense, Flatten, Conv3D, MaxPooling3D, Dropout
+from tensorflow.keras.models import Sequential
+import os, os.path
+from tensorflow import keras
+import matplotlib.pyplot as plt
+import PIL
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras import layers
+from tensorflow.keras.models import Sequential
+from tensorflow.keras import datasets, layers, models
+from os import walk
+import matplotlib.image as mpimg
+from tensorflow.keras.preprocessing import image
+import pathlib
+import glob
+#import splitfolders
+import random
+import shutil
+import seaborn as sns
+from sklearn.utils import shuffle
+from sklearn.metrics import confusion_matrix
+from tensorflow.keras.utils import to_categorical
+import SimpleITK as sitk
+from sklearn.model_selection import train_test_split, KFold
+from tensorflow.keras.applications import VGG16
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Concatenate, Input
+from tensorflow.keras.models import Model
+from sklearn.metrics import confusion_matrix, f1_score
+import seaborn as sns
+from tensorflow.keras.optimizers import Adamax
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.regularizers import l1
+from sklearn.model_selection import train_test_split, StratifiedKFold
+import cv2 
+from PIL import Image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import config
+from sac_dataset import features_array, labels_array, train_datagen
 import wandb
+from wandb.keras import WandbMetricsLogger
+from utils import calculate_grad_cam
 
-def softmax(x):
-    exp_x = np.exp(x) 
-    return exp_x / exp_x.sum(axis=0)
+
 
 # Definition of the number of folds for cross-validation
 n_splits = config.n_splits
-input_shape = (3, 240, 180)  # PyTorch convention: (channels, height, width)
+input_shape = (240, 180, 3)  # PyTorch convention: (channels, height, width)
 
 accuracy_scores = []
 f1_scores = []
 
+
 for i in range(n_splits):
     print(f"Iteration {i + 1}:")
-
-    # Creation of the complete model
-    vgg16 = models.vgg16(weights="VGG16_Weights.DEFAULT")
-
-    # Set parameters of pretrained layers to non-trainable
-    for param in vgg16.parameters():
-        param.requires_grad = False
-
-    num_features = vgg16.classifier[-1].in_features
-    vgg16.classifier[-1] = nn.Sequential(
-        nn.Linear(num_features, 512),
-        nn.ReLU(),
-        nn.Dropout(0.3),
-        nn.Linear(512, 1),
-        nn.Sigmoid()
-    )
-
-    # Move model to device
-    vgg16.to(config.device)
 
     X_train, X_test, y_train, y_test = train_test_split(features_array, labels_array, test_size=0.3, random_state=i, stratify=labels_array)
 
     X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.30, random_state=i, stratify=y_test)
 
-    train_dataset = sac_dataset.CustomImageDataset(X_train, y_train)
 
-    batch_size = config.batchsize
+    vgg16 = VGG16(weights='imagenet', include_top=False, input_shape=input_shape)
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    # Imposta i layer come non allenabili
+    for layer in vgg16.layers:
+        layer.trainable = False
 
-    X_val = torch.tensor(X_val, dtype=torch.float32).permute(0, 3, 1, 2) / 255
-    X_test = torch.tensor(X_test, dtype=torch.float32).permute(0, 3, 1, 2) / 255
+   # Create a new sequential pattern
+    x = Flatten()(vgg16.output)
+    x = Dense(512, activation='relu' ,kernel_regularizer=l1(0.001))(x)
+    x = Dropout(0.3)(x)  # Aggiungi un layer di Dropout con una probabilità del 50%
+    predictions = Dense(1, activation='sigmoid')(x)
+    model = Model(inputs=vgg16.input, outputs=predictions)
+    model.summary()
 
-    criterion = nn.BCELoss()
-    optimizer = optim.Adamax(vgg16.parameters(), lr=config.learning_rate)
+    X_train = X_train / 255
+    X_val = X_val / 255
+    X_test = X_test / 255
 
-    num_epochs = config.num_epochs
-    train_loss_array = []
-    train_accuracy_array = []
+    train_generator = train_datagen.flow(X_train, y_train, batch_size=32)
 
-    for epoch in range(num_epochs):
-        vgg16.train()
-        running_loss = 0.0
-        loop = tqdm(train_loader, leave=True)
-        outputs_array = np.array([])
-        for idx, (inputs, labels) in enumerate(loop):
-            inputs, labels = inputs.to(config.device), labels.to(config.device)
-            optimizer.zero_grad()
-            outputs = vgg16(inputs)
-            loss = criterion(outputs.squeeze(), labels.float().squeeze())
-            loss.backward()
-            optimizer.step()
-            running_loss += loss.item() * inputs.size(0)
-            outputs_array = np.append(outputs_array, np.array(outputs.cpu().detach()))
-        
-        test_predictions = ((outputs_array) > 0.5).astype(int)
+    model.compile(optimizer=Adamax(learning_rate=0.0001), loss='binary_crossentropy', metrics=['accuracy'])
 
-        train_accuracy = (test_predictions == y_train.reshape(-1, 1)).mean()
+    wandb_callback = wandb.keras.WandbCallback(log_weights=False)
 
-        train_loss = running_loss / len(train_loader.dataset)
-        train_loss_array.append(train_loss)
-        train_accuracy_array.append(train_accuracy)
-        
-        wandb.log({"train_loss": train_loss, "Train acc": train_accuracy} )
-        print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}, Train acc: {train_accuracy:.4f}")
+    history = model.fit(train_generator, epochs=config.num_epochs, validation_data=(X_val, y_val), callbacks=[WandbMetricsLogger()])
 
-
-
-    vgg16.eval()
-
-    with torch.no_grad():
-        outputs = vgg16(X_test.to(config.device))
-        test_predictions = (outputs.cpu() > 0.5).numpy().astype(int)
-        test_loss = criterion(outputs.squeeze(),
-                               torch.tensor(y_test, dtype=torch.float32).squeeze()).item()
-
-    test_accuracy = (test_predictions == y_test.reshape(-1, 1)).mean()
+    test_loss, test_accuracy = model.evaluate(X_test, y_test)
     print("Test Accuracy:", test_accuracy)
 
+    test_predictions = model.predict(X_test)
+    test_predictions = (test_predictions > 0.5).astype(int)
     f1 = f1_score(y_test, test_predictions)
     print("F1-score:", f1)
 
     accuracy_scores.append(test_accuracy)
     f1_scores.append(f1)
 
-    # Plot Loss
-    plt.plot(range(num_epochs), train_loss_array, label='Training Loss')
+    plt.plot(history.history['loss'], label='Training Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.title('Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
     plt.show()
-    
 
-    #Plot Accuracy
-    plt.plot(range(num_epochs), train_accuracy_array, label='Training Accuracy')
+    plt.plot(history.history['accuracy'], label='Training Accuracy')
+    plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+    plt.title('Accuracy')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
     plt.show()
 
     # GRAD-CAM
-    # You need to implement this part using PyTorch's hooks and gradcam techniques
+    conv_layer = 'block5_conv3'
+    num_images_to_display = min(len(X_test), 30)  
+    rows = int(np.ceil(num_images_to_display / 5))  
+
+    plt.figure(figsize=(15, 3 * rows))  
+    for i in range(num_images_to_display):
+        cam = calculate_grad_cam(model, conv_layer, X_test[i])
+        plt.subplot(rows, 5, i+1)
+        plt.imshow(X_test[i])
+        plt.imshow(cam, alpha=0.5, cmap='jet')
+        title = "Correct" if test_predictions[i] == y_test[i] else "Incorrect"
+        title += f" (Class {y_test[i]})"  
+        plt.title(title)
+        plt.axis('off')
+    plt.tight_layout()  
+    plt.show()
 
     # Confusion Matrix
     conf_matrix = confusion_matrix(y_test, test_predictions)
@@ -145,13 +145,9 @@ for i in range(n_splits):
     plt.xlabel('Predicted labels')
     plt.ylabel('True labels')
     plt.title('Confusion Matrix')
-
     plt.show()
 
-print("Average Accuracy:", np.mean(accuracy_scores))
-print("Average F1-score:", np.mean(f1_scores))
+print("Average Accuracy:", np.median(accuracy_scores))
+print("Average F1-score:", np.median(f1_scores))
 print("Standard Deviation of Accuracy:", np.std(accuracy_scores))
 print("Standard Deviation of F1-score:", np.std(f1_scores))
-
-wandb.finish()
-

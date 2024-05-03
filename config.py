@@ -19,11 +19,13 @@ num_epochs = int(args.num_epochs)
 if cluster:
     folder_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t" / 'sarcoidosis_MIPs_(npy)'
     csv_file_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t" / "sacoidosis.csv"
-    checkpoint_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t" / "checkpoints" / "sacoidosis"
+    checkpoint_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t" / "sarcoidosis" / "checkpoints" 
+    image_path = pathlib.Path("/omics") / "groups" / "OE0471" / "internal" / "m623t"  / "sarcoidosis" / "plots"
     
 else:
     folder_path = 'sarcoidosis_MIPs_(npy)'
     csv_file_path = 'sacoidosis.csv'
+    image_path = pathlib.Path.cwd() / 'data' / 'plots' 
 
 # Training parameters
 train_ratio = 0.7

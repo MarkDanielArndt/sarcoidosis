@@ -1,11 +1,11 @@
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import Adamax
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import tensorflow as tf
 from tensorflow.keras.layers import Dense, Flatten, Conv3D, MaxPooling3D, Dropout
 from tensorflow.keras.models import Sequential
 import os, os.path
@@ -109,7 +109,8 @@ for i in range(n_splits):
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    plt.show()
+    plt.savefig(config.image_path / ("Loss" + str(i)))
+    plt.clf()
 
     plt.plot(history.history['accuracy'], label='Training Accuracy')
     plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
@@ -117,7 +118,9 @@ for i in range(n_splits):
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
-    plt.show()
+    plt.savefig(config.image_path / ("Accuracy" + str(i)))
+    plt.clf()
+
 
     # GRAD-CAM
     conv_layer = 'block5_conv3'
@@ -135,7 +138,8 @@ for i in range(n_splits):
         plt.title(title)
         plt.axis('off')
     plt.tight_layout()  
-    plt.show()
+    plt.savefig(config.image_path / ("grad_cam" + str(i)))
+    plt.clf()
 
     # Confusion Matrix
     conf_matrix = confusion_matrix(y_test, test_predictions)
@@ -145,7 +149,9 @@ for i in range(n_splits):
     plt.xlabel('Predicted labels')
     plt.ylabel('True labels')
     plt.title('Confusion Matrix')
-    plt.show()
+    plt.savefig(config.image_path / ("Confusion Matrix" + str(i)))
+    plt.clf()
+
 
 print("Average Accuracy:", np.median(accuracy_scores))
 print("Average F1-score:", np.median(f1_scores))

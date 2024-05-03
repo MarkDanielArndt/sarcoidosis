@@ -66,8 +66,10 @@ for i in range(n_splits):
     X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.30, random_state=i, stratify=y_test)
 
 
-    vgg16 = VGG16(weights='imagenet', include_top=False, input_shape=input_shape)
+    #vgg16 = VGG16(weights='imagenet', include_top=False, input_shape=input_shape)
 
+    vgg16 = tf.keras.models.load_model(config.checkpoint_path / "vgg16.h5")
+   
     # Imposta i layer come non allenabili
     for layer in vgg16.layers:
         layer.trainable = False

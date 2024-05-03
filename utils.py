@@ -36,3 +36,4 @@ def calculate_grad_cam(model, layer_name, image):
     cam = cv2.applyColorMap(np.uint8(255 * heatmap), cv2.COLORMAP_JET)
 
     return cam
+

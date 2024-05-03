@@ -6,7 +6,7 @@ import wandb
 parser = argparse.ArgumentParser(description="Options for the run.")
 
 parser.add_argument("--cluster", default=False, action="store_true")
-parser.add_argument("--num_epochs", required=False, default=1)
+parser.add_argument("--num_epochs", required=False, default=10)
 parser.add_argument("--num_splits", required=False, default=2)
 #parser.add_argument("--check_steps", required=False, default=10)
 #parser.add_argument("--load_model", required=False, action="store_true", default=False)
@@ -28,6 +28,7 @@ else:
     folder_path = 'sarcoidosis_MIPs_(npy)'
     csv_file_path = 'sacoidosis.csv'
     image_path = pathlib.Path.cwd() / 'data' / 'plots' 
+    checkpoint_path = pathlib.Path.cwd() / 'data' 
 
 # Training parameters
 train_ratio = 0.7

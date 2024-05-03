@@ -6,7 +6,8 @@ import wandb
 parser = argparse.ArgumentParser(description="Options for the run.")
 
 parser.add_argument("--cluster", default=False, action="store_true")
-parser.add_argument("--num_epochs", required=False, default=25)
+parser.add_argument("--num_epochs", required=False, default=1)
+parser.add_argument("--num_splits", required=False, default=2)
 #parser.add_argument("--check_steps", required=False, default=10)
 #parser.add_argument("--load_model", required=False, action="store_true", default=False)
 #parser.add_argument("--save_model", required=False, action="store_true", default=True)
@@ -14,6 +15,7 @@ parser.add_argument("--num_epochs", required=False, default=25)
 args = parser.parse_args()
 cluster = args.cluster
 num_epochs = int(args.num_epochs)
+num_splits = int(args.num_splits)
 
 # Data paths
 if cluster:
@@ -32,7 +34,7 @@ train_ratio = 0.7
 val_ratio = 0.15
 test_ratio = 0.15
 batchsize = 32
-n_splits = 3
+n_splits = num_splits
 learning_rate = 0.001
 
 # Images

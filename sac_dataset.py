@@ -44,7 +44,7 @@ train_datagen = ImageDataGenerator(
     horizontal_flip=True,
     fill_mode='nearest',
     preprocessing_function=custom_contrast,
-    preprocessing_function=saturate_image,
+    #preprocessing_function=saturate_image,
 
     #vertical_flip=True,
     #brightness_range=[0.2, 0.5]

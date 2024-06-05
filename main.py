@@ -44,12 +44,12 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import config
 from sac_dataset import features_array, labels_array, train_datagen
 import wandb
-from wandb.keras import WandbMetricsLogger
+#from wandb.keras import WandbMetricsLogger
 from utils import calculate_grad_cam
 from tensorflow.keras.applications import Xception, VGG16, VGG19, ResNet50V2, ResNet101V2, ResNet152V2, \
                                     InceptionResNetV2, MobileNetV2, DenseNet121, DenseNet169, DenseNet201, \
                                     EfficientNetB0, EfficientNetB4, EfficientNetB7, NASNetLarge
-from keras_tuner.tuners import RandomSearch
+#from keras_tuner.tuners import RandomSearch
 
 
 
@@ -103,7 +103,7 @@ for starting_model in list_pretrained:
 
         X_train, X_test, y_train, y_test = train_test_split(features_array, labels_array, test_size=0.3, stratify=labels_array) #, random_state=split
 
-        X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.30, stratify=y_test) #, random_state=split
+        X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.95, stratify=y_test) #, random_state=split
 
 
         #starting_model = VGG16(weights='imagenet', include_top=False, input_shape=input_shape)
@@ -115,18 +115,18 @@ for starting_model in list_pretrained:
         for layer in starting_model.layers:
             layer.trainable = False
 
-        tuner = RandomSearch(
-        build_model,
-        objective='val_accuracy',
-        max_trials=10,
-        executions_per_trial=3,
-        directory= config.image_path,
-        project_name='image_classification_tuning'
-        )
-        tuner.search(X_train, y_train, epochs=24, validation_data=(X_val, y_val), callbacks=[WandbMetricsLogger()])
+        # tuner = RandomSearch(
+        # build_model,
+        # objective='val_accuracy',
+        # max_trials=10,
+        # executions_per_trial=3,
+        # directory= config.image_path,
+        # project_name='image_classification_tuning'
+        # )
+        # tuner.search(X_train, y_train, epochs=24, validation_data=(X_val, y_val), callbacks=[WandbMetricsLogger()])
 
-        # Get the optimal hyperparameters
-        best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
+        # # Get the optimal hyperparameters
+        # best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
 
         # Print the optimal hyperparameters
         # print(f"""
@@ -137,36 +137,35 @@ for starting_model in list_pretrained:
         # """)
 
         # Build the model with the optimal hyperparameters and train it
-        model = tuner.hypermodel.build(best_hps)
+        #model = tuner.hypermodel.build(best_hps)
+        X_train = X_train / 255.0
+        X_val = X_val / 255.0
+        X_test = X_test / 255.0	
 
         train_generator = train_datagen.flow(X_train, y_train, batch_size=32)
 
-        history = model.fit(train_generator, epochs=config.num_epochs, validation_data=(X_val, y_val), callbacks=[WandbMetricsLogger()])
+        #history = model.fit(train_generator, epochs=config.num_epochs, validation_data=(X_val, y_val), callbacks=[WandbMetricsLogger()])
 
         # Evaluate the model on the test data
-        test_loss, test_accuracy, _ = model.evaluate(X_test, y_test)
-        print("Test Accuracy:", test_accuracy)
+        #test_loss, test_accuracy, _ = model.evaluate(X_test, y_test)
+        #print("Test Accuracy:", test_accuracy)
         # Create a new sequential pattern
         #x = Conv2D(512, (3, 3), activation='relu')(starting_model.output)
         #x = GlobalAveragePooling2D()(starting_model.output) #-> Try this instead of Flatten
         x = Flatten()(starting_model.output)
-        x = Dense(512, activation='relu' ,kernel_regularizer=l1(0.001))(x) #try l2 regularization and SiLu
+        x = Dense(config.num_nodes, activation='relu', kernel_regularizer=l1(0.001))(x) #try l2 regularization and SiLu
         x = Dropout(0.3)(x)  #tf.keras.activations.silu for activation
         predictions = Dense(1, activation='sigmoid')(x)
         model = Model(inputs=starting_model.input, outputs=predictions)
         #model.summary()
 
-        X_train = X_train / 255.0
-        X_val = X_val / 255.0
-        X_test = X_test / 255.0
-
 
         model.compile(optimizer=Adamax(learning_rate=config.learning_rate),
                     loss='binary_crossentropy', metrics=['accuracy', 'mse'])
 
-        wandb_callback = wandb.keras.WandbCallback(log_weights=False)
+        #wandb_callback = wandb.keras.WandbCallback(log_weights=False)
 
-        history = model.fit(train_generator, epochs=config.num_epochs, validation_data=(X_val, y_val), callbacks=[WandbMetricsLogger()])
+        history = model.fit(train_generator, epochs=config.num_epochs, validation_data=(X_val, y_val))
 
         test_loss, test_accuracy, _  = model.evaluate(X_test, y_test)
         print("Test Accuracy:", test_accuracy)
@@ -234,7 +233,7 @@ for starting_model in list_pretrained:
     print("Standard Deviation of Accuracy:", np.std(accuracy_scores))
     print("Standard Deviation of F1-score:", np.std(f1_scores))
 
-    content = f"Model: {name} {n_splits}-fold ({config.num_epochs} epochs)\n" + \
+    content = f"Model: {name} {config.num_nodes}-nodes {n_splits}-fold ({config.num_epochs} epochs)\n" + \
     f"Average Accuracy: {np.median(accuracy_scores)}\n" + \
     f"Average F1-score: {np.median(f1_scores)}\n" + \
     f"Standard Deviation of Accuracy: {np.std(accuracy_scores)}\n" + \

@@ -5,7 +5,6 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-import torchvision.transforms as transforms
 import config
 import random
 import tensorflow as tf
@@ -45,16 +44,16 @@ train_datagen = ImageDataGenerator(
     # fill_mode='nearest',
     # preprocessing_function=custom_contrast,
     # #preprocessing_function=saturate_image,
-    vertical_flip=True,
+    #vertical_flip=True,
     # #brightness_range=[0.2, 0.5]
     #
-    rotation_range=40,         # Rotate images randomly by up to 40 degrees
-    width_shift_range=0.20,     # Shift images horizontally by up to 20% of the width
-    height_shift_range=0.20,    # Shift images vertically by up to 20% of the height
+    rotation_range=10,         # Rotate images randomly by up to 40 degrees
+    width_shift_range=0.10,     # Shift images horizontally by up to 20% of the width
+    height_shift_range=0.10,    # Shift images vertically by up to 20% of the height
     #shear_range=0.2,           # Shear intensity (shear angle in radians)
-    zoom_range=0.20,            # Zoom in/out by up to 20%
+    zoom_range=0.10,            # Zoom in/out by up to 20%
     horizontal_flip=True,      # Flip images horizontally
-    brightness_range=[0.5, 1.5],       
+    #brightness_range=[0.75, 1.25],       
     fill_mode='nearest',
         
     )

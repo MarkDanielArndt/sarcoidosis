@@ -53,7 +53,8 @@ train_datagen = ImageDataGenerator(
     #shear_range=0.2,           # Shear intensity (shear angle in radians)
     zoom_range=0.10,            # Zoom in/out by up to 20%
     horizontal_flip=True,      # Flip images horizontally
-    #brightness_range=[0.75, 1.25],       
+    #brightness_range=[0.75, 1.25],
+    preprocessing_function=custom_contrast,       
     fill_mode='nearest',
         
     )
@@ -64,19 +65,24 @@ for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
         data = np.load(file_path)
         image=[]
-        slice1=data[0]
-        #slice2=data[3]
-        #slice3=data[5]
+        slice1=data[config.slice]
+        if config.ensemble:
+            slice2=data[3]
+            slice3=data[5]
         #slice4=data[7]
 
         # Crop before resizing        
         resized_slice1 = cv2.resize(slice1, (new_width, new_height))
-        #resized_slice2 = cv2.resize(slice2, (new_width, new_height))
-        #resized_slice3 = cv2.resize(slice3, (new_width, new_height))
+        if config.ensemble:
+            resized_slice2 = cv2.resize(slice2, (new_width, new_height))
+            resized_slice3 = cv2.resize(slice3, (new_width, new_height))
         #resized_slice4 = cv2.resize(slice4, (new_width, new_height))
 
         # Crop to the resized image
         cropped_slice1 = resized_slice1[crop_x_start: crop_x_end, crop_y_start: crop_y_end]
+        if config.ensemble:
+            cropped_slice2 = resized_slice2[crop_x_start: crop_x_end, crop_y_start: crop_y_end]
+            cropped_slice3 = resized_slice3[crop_x_start: crop_x_end, crop_y_start: crop_y_end]
         #cropped_slice2 = resized_slice2[50:370, :200]
         #cropped_slice3 = resized_slice3[50:370, :200]
         #cropped_slice4 = resized_slice4[50:370, :200]
@@ -102,6 +108,12 @@ for filename in os.listdir(folder_path):
             
     	# Add the corresponding patient image and label to the data list
         data_list.append((np.array(cropped_slice1), matching_labels))
+        if config.ensemble:
+            data_list.append((np.array(cropped_slice2), matching_labels))
+            data_list.append((np.array(cropped_slice3), matching_labels))
+
+
+
 
 # Inizializza le liste per le features e le label
 features_list = []

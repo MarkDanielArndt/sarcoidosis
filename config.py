@@ -6,9 +6,11 @@ import wandb
 parser = argparse.ArgumentParser(description="Options for the run.")
 
 parser.add_argument("--cluster", default=False, action="store_true")
-parser.add_argument("--num_epochs", required=False, default=50)
-parser.add_argument("--num_splits", required=False, default=10)
+parser.add_argument("--ensemble", default=False, action="store_true")
+parser.add_argument("--num_epochs", required=False, default=1)
+parser.add_argument("--num_splits", required=False, default=3)
 parser.add_argument("--num_nodes", required=False, default=800)
+parser.add_argument("--slice", required=False, default=0)
 
 
 #parser.add_argument("--check_steps", required=False, default=10)
@@ -17,9 +19,11 @@ parser.add_argument("--num_nodes", required=False, default=800)
 
 args = parser.parse_args()
 cluster = args.cluster
+ensemble = args.ensemble
 num_epochs = int(args.num_epochs)
 num_splits = int(args.num_splits)
 num_nodes = int(args.num_nodes)
+slice = int(args.slice)
 
 # Data paths
 if cluster:
